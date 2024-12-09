@@ -16,7 +16,7 @@
     "highlight.js": "^10.7.2",
     "html-webpack-plugin": "^5.3.1",
     "loader-utils": "^2.0.0",
-    "marked": "^2.0.3",
+    "marked": "^4.0.10",
     "schema-utils": "^3.0.0",
     "style-loader": "^2.0.0",
     "webpack": "^5.24.4",
