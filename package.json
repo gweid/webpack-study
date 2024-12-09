@@ -62,7 +62,7 @@
     "dependencies": {
         "axios": "^0.21.1",
         "dayjs": "^1.10.4",
-        "express": "^4.17.1",
+        "express": "^4.17.3",
         "jquery": "^3.5.0",
         "lodash": "^4.17.21",
         "react": "^17.0.1",
