@@ -1679,8 +1679,9 @@ module.exports = {
 npm i optimize-css-assets-webpack-plugin -D
 ```
 
-```
+```js
 const OptimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plugin')
+
 plugins: [
     new OptimizeCssAssetsWebpackPlugin() // 直接使用默认配置已经足够
 ]
@@ -2166,7 +2167,7 @@ npm i html-webpack-plugin -D
 
 > 使用 minify 默认会使用一个插件 html-minifier-terser
 
-```
+```js
 plugins: [
     new HtmlWebpackPlugin({
       filename: 'index.html',
@@ -2785,6 +2786,43 @@ plugins: [
         filename: 'css/main.[contenthash:8].css', // 分离到到 main.css  使用 contenthash 值
     }),
 ]
+```
+
+
+
+##### 代码压缩
+
+压缩 html、 js、css
+
+```js
+module.exports = {
+  	plugins: [
+      new HtmlWebpackPlugin({
+        filename: 'index.html',
+        template: './src/index.html', // 以什么为模板
+
+        // 压缩 HTML 的配置(开发环境不需要压缩)
+        minify: MODE === 'production' ? {
+          removeComments: true, // 是否去掉注释
+          collapseWhitespace: true, // 折叠成一行
+        } : false,
+      })
+    ],
+    optimization： {
+        // minimize: true, // 开启或者关闭 minimizer，生产环境默认开启
+        minimizer: [
+  					// 压缩 js
+            new TerserWebpackPlugin({
+                cache: true, // 开启缓存
+                parallel: true, // 开启多进程打包
+                extractComments: false,
+            }),
+            
+            // 压缩 css
+            new CssMinimizerWebpackPlugin()
+        ]
+    }
+}
 ```
 
 
