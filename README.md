@@ -1401,7 +1401,9 @@ module.exports = {
 
 
 
-### 清空出口目录 clean-webpack-plugin
+### clean-webpack-plugin
+
+用来清空出口目录
 
 ```js
 const {
@@ -1412,6 +1414,18 @@ const {
 plugins: [
     new CleanWebpackPlugin()
 ]
+```
+
+
+
+webpack5 中可以使用 `output.clean` 来替代
+
+```js
+module.exports = {
+  output: {
+    clean: true
+  }
+}
 ```
 
 
