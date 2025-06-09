@@ -73,7 +73,7 @@ npx 的作用：
 - 在 webpack 执行的时候，会根据命令或者配置文件找到入口文件
 - 从入口文件开始，查找出每一个依赖，生成一个依赖图
 - 然后遍历递归依赖图，根据文件不同，使用不同 loader 处理文件，打包一个个模块
-- 最后将结果输出（当然，中间打包的过程可以通过 plugin 控制整个生命周期）
+- 最后将结果输出（中间打包的过程可以通过 plugin 控制整个生命周期）
 
 
 
@@ -91,358 +91,364 @@ npx 的作用：
 
 在 webpack 中，可以使用各种各样的模块化，包括 CommonJS、ES Module 等
 
-- CommonJS 模块化
 
-  首先是 format.js 中
 
-  ```js
-  const dateFormat = (date) => {
-    return "2020-12-12";
-  }
-  
-  const priceFormat = (price) => {
-    return "100.00";
-  }
-  
-  module.exports = {
-    dateFormat,
-    priceFormat
-  }
-  
-  ```
+#### CommonJS 模块化
 
-  然后 common.js 
+首先是 format.js 中
 
-  ```js
-  const { dateFormat, priceFormat } = require('./js/format');
-  
-  console.log(dateFormat("abc"));
-  console.log(priceFormat("abc"));
-  ```
+```js
+const dateFormat = (date) => {
+  return "2020-12-12";
+}
 
-  打包后产物：
+const priceFormat = (price) => {
+  return "100.00";
+}
 
-  ```js
-  // 最外层就是一个自执行函数
-  (function () {
-    // 定义了一个对象去存储模块
-    // 模块的路径是对象的 key，模块的代码封装在一个函数里作为是对象的 value
-    var __webpack_modules__ = {
-      './src/js/format.js': function (module) {
-        const dateFormat = (date) => {
-          return '2020-12-12';
-        };
-  
-        const priceFormat = (price) => {
-          return '100.00';
-        };
-  
-        module.exports = {
-          dateFormat,
-          priceFormat,
-        };
-      },
-    };
-  
-    // 这个对象, 作为加载模块的缓存
-    var __webpack_module_cache__ = {};
-  
-    // 当加载一个模块时，都会通过这个函数来加载
-    // moduleId 就是需要加载的模块路径
-    function __webpack_require__(moduleId) {
-      // 1、判断缓存是否加载过
-      if (__webpack_module_cache__[moduleId]) {
-        return __webpack_module_cache__[moduleId].exports;
-      }
-  
-      // 2、给 module 变量和 __webpack_module_cache__[moduleId] 赋值了同一个对象
-      // 这样做的好处：两者同时指向同一个对象，那么，当这个被指向的对象改变，那么这两者的也会同时改变
-      var module = __webpack_module_cache__[moduleId] = { exports: {} };
-  
-      // 3、加载模块
-      // 将 module={ exports: {} } 这个对象传给 __webpack_modules__[moduleId] 这个函数，让这个函数往 module 添加东西
-      __webpack_modules__[moduleId](module, module.exports, __webpack_require__);
-  
-      // 4、导出 module.export { dateFormat: function, priceForamt: function }
-      return module.exports;
+module.exports = {
+  dateFormat,
+  priceFormat
+}
+
+```
+
+然后 common.js 
+
+```js
+const { dateFormat, priceFormat } = require('./js/format');
+
+console.log(dateFormat("abc"));
+console.log(priceFormat("abc"));
+```
+
+打包后产物：
+
+```js
+// 最外层就是一个自执行函数
+(function () {
+  // 定义了一个对象去存储模块
+  // 模块的路径是对象的 key，模块的代码封装在一个函数里作为是对象的 value
+  var __webpack_modules__ = {
+    './src/js/format.js': function (module) {
+      const dateFormat = (date) => {
+        return '2020-12-12';
+      };
+
+      const priceFormat = (price) => {
+        return '100.00';
+      };
+
+      module.exports = {
+        dateFormat,
+        priceFormat,
+      };
+    },
+  };
+
+  // 这个对象, 作为加载模块的缓存
+  var __webpack_module_cache__ = {};
+
+  // 当加载一个模块时，都会通过这个函数来加载
+  // moduleId 就是需要加载的模块路径
+  function __webpack_require__(moduleId) {
+    // 1、判断缓存是否加载过
+    if (__webpack_module_cache__[moduleId]) {
+      return __webpack_module_cache__[moduleId].exports;
     }
-  
-    // 通过自执行函数实现代码逻辑
-    !(function () {
-      // 将 require 加载转换为实现的 __webpack_require__ 加载，通过 __webpack_require__ 去加载模块
-      const { dateFormat, priceFormat } = __webpack_require__('./src/js/format.js');
-  
-      console.log(dateFormat('abc'));
-      console.log(priceFormat('abc'));
-    })();
+
+    // 2、给 module 变量和 __webpack_module_cache__[moduleId] 赋值了同一个对象
+    // 这样做的好处：两者同时指向同一个对象，那么，当这个被指向的对象改变，那么这两者的也会同时改变
+    var module = __webpack_module_cache__[moduleId] = { exports: {} };
+
+    // 3、加载模块
+    // 将 module={ exports: {} } 这个对象传给 __webpack_modules__[moduleId] 这个函数，让这个函数往 module 添加东西
+    __webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+
+    // 4、导出 module.export { dateFormat: function, priceForamt: function }
+    return module.exports;
+  }
+
+  // 通过自执行函数实现代码逻辑
+  !(function () {
+    // 将 require 加载转换为实现的 __webpack_require__ 加载，通过 __webpack_require__ 去加载模块
+    const { dateFormat, priceFormat } = __webpack_require__('./src/js/format.js');
+
+    console.log(dateFormat('abc'));
+    console.log(priceFormat('abc'));
   })();
-  ```
+})();
+```
 
-- ES Module 模块化
 
-  math.js：
 
-  ```js
-  export const sum = (num1, num2) => {
-    return num1 + num2;
-  }
-  
-  export const mul = (num1, num2) => {
-    return num1 * num2;
-  }
-  ```
+#### ES Module 模块化
 
-  esmodule.js：
+math.js：
 
-  ```js
-  import { sum, mul } from "./js/math";
-  
-  console.log(mul(20, 30));
-  console.log(sum(20, 30));
-  ```
+```js
+export const sum = (num1, num2) => {
+  return num1 + num2;
+}
 
-  打包后产物：
+export const mul = (num1, num2) => {
+  return num1 * num2;
+}
+```
 
-  ```js
-  // 外部是一个自执行函数
-  ;(function () {
-    'use strict'
-    // 定义一个对象，用于存储模块
-    // 模块路径作为对象 key 值
-    var __webpack_modules__ = {
-      './src/js/math.js': function (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
-        // 调用 __webpack_require__.r，记录 __esModule 为 true
-        __webpack_require__.r(__webpack_exports__)
-  
-        // 调用 __webpack_require__.d，将 exports 没有的代理到 { sum: Function, mul: Function }
-        __webpack_require__.d(__webpack_exports__, {
-          sum: function () {
-            return sum
-          },
-          mul: function () {
-            return mul
-          }
-        })
-  
-        const sum = (num1, num2) => {
-          return num1 + num2
-        }
-  
-        const mul = (num1, num2) => {
-          return num1 * num2
-        }
-      }
-    }
-  
-    // 这个对象用于缓存加载过的模块
-    var __webpack_module_cache__ = {}
-  
-    // 当加载一个模块时，都会通过这个函数来加载
-    // moduleId 就是需要加载的模块路径
-    function __webpack_require__(moduleId) {
-      // 1、判断是否已经加载过这个模块
-      if (__webpack_module_cache__[moduleId]) {
-        return __webpack_module_cache__[moduleId].exports
-      }
-      
-      // 2、给 module 变量和 __webpack_module_cache__[moduleId] 赋值了同一个对象
-      // 这样做的好处：两者同时指向同一个对象，那么，当这个被指向的对象改变，那么这两者的也会同时改变
-      var module = __webpack_module_cache__[moduleId] = { exports: {} }
-  
-      // 3、执行 __webpack_modules__ 相应模块的函数，参数是 module、module.exports、__webpack_require__
-      __webpack_modules__[moduleId](module, module.exports, __webpack_require__)
-  
-      // 4、导出 module.exports 这个对象
-      return module.exports
-    }
-  
-    // 为 __webpack_require__ 这个函数对象添加一个属性 d --> function
-    !(function () {
-      // exports：就是 module 中的 exports；definition：模块中的导出
-      __webpack_require__.d = function (exports, definition) {
-        for (var key in definition) {
-          // 如果一个 key 在 definition 中，而不在 exports 中
-          if (__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-            // 为 module 的 exports 代理到 definition，访问 module.exports 的 key 会被代理到 definition
-            // 也就是说 exports 本身并没有 { sum: Function, mul: Function }，访问 sum 的时候实际上读取的是 definition 的
-            Object.defineProperty(exports, key, { enumerable: true, get: definition[key] })
-          }
-        }
-      }
-    })()
-  
-    // 为 __webpack_require__ 这个函数对象添加一个属性 o --> function
-    !(function () {
-      // 这个 o 函数的作用：判断某个对象是否包含某个 key
-      __webpack_require__.o = function (obj, prop) {
-        return Object.prototype.hasOwnProperty.call(obj, prop)
-      }
-    })()
-  
-    // 为 __webpack_require__ 这个函数对象加一个属性 r --> function
-    !(function () {
-      __webpack_require__.r = function (exports) {
-        if (typeof Symbol !== 'undefined' && Symbol.toStringTag) {
-          Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' })
-        }
-        // 为 module 的 exports 对象设置一个 __esModule，值为 true
-        // 目的就是标记当前这个模块是不是 es module，以便后面如果需要，能够用到这个信息
-        Object.defineProperty(exports, '__esModule', { value: true })
-      }
-    })()
-  
-    var __webpack_exports__ = {}
-  
-    // 自执行函数实现代码逻辑
-    !(function () {
+esmodule.js：
+
+```js
+import { sum, mul } from "./js/math";
+
+console.log(mul(20, 30));
+console.log(sum(20, 30));
+```
+
+打包后产物：
+
+```js
+// 外部是一个自执行函数
+;(function () {
+  'use strict'
+  // 定义一个对象，用于存储模块
+  // 模块路径作为对象 key 值
+  var __webpack_modules__ = {
+    './src/js/math.js': function (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+      // 调用 __webpack_require__.r，记录 __esModule 为 true
       __webpack_require__.r(__webpack_exports__)
-      var _js_math__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__('./src/js/math.js')
-  
-      console.log((0, _js_math__WEBPACK_IMPORTED_MODULE_0__.mul)(20, 30))
-      console.log((0, _js_math__WEBPACK_IMPORTED_MODULE_0__.sum)(20, 30))
-    })()
+
+      // 调用 __webpack_require__.d，将 exports 没有的代理到 { sum: Function, mul: Function }
+      __webpack_require__.d(__webpack_exports__, {
+        sum: function () {
+          return sum
+        },
+        mul: function () {
+          return mul
+        }
+      })
+
+      const sum = (num1, num2) => {
+        return num1 + num2
+      }
+
+      const mul = (num1, num2) => {
+        return num1 * num2
+      }
+    }
+  }
+
+  // 这个对象用于缓存加载过的模块
+  var __webpack_module_cache__ = {}
+
+  // 当加载一个模块时，都会通过这个函数来加载
+  // moduleId 就是需要加载的模块路径
+  function __webpack_require__(moduleId) {
+    // 1、判断是否已经加载过这个模块
+    if (__webpack_module_cache__[moduleId]) {
+      return __webpack_module_cache__[moduleId].exports
+    }
+    
+    // 2、给 module 变量和 __webpack_module_cache__[moduleId] 赋值了同一个对象
+    // 这样做的好处：两者同时指向同一个对象，那么，当这个被指向的对象改变，那么这两者的也会同时改变
+    var module = __webpack_module_cache__[moduleId] = { exports: {} }
+
+    // 3、执行 __webpack_modules__ 相应模块的函数，参数是 module、module.exports、__webpack_require__
+    __webpack_modules__[moduleId](module, module.exports, __webpack_require__)
+
+    // 4、导出 module.exports 这个对象
+    return module.exports
+  }
+
+  // 为 __webpack_require__ 这个函数对象添加一个属性 d --> function
+  !(function () {
+    // exports：就是 module 中的 exports；definition：模块中的导出
+    __webpack_require__.d = function (exports, definition) {
+      for (var key in definition) {
+        // 如果一个 key 在 definition 中，而不在 exports 中
+        if (__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+          // 为 module 的 exports 代理到 definition，访问 module.exports 的 key 会被代理到 definition
+          // 也就是说 exports 本身并没有 { sum: Function, mul: Function }，访问 sum 的时候实际上读取的是 definition 的
+          Object.defineProperty(exports, key, { enumerable: true, get: definition[key] })
+        }
+      }
+    }
   })()
-  ```
 
-- CommonJS 和 ES Module 相互导入
-
-  这个其实就是上面两个的结合，最主要还是 webpack 的打包产物，内部通过一个对象存储所有的模块，然后通过 `__webpack_require__` 去加载模块，实现了抹平
-
-  ```js
-  // 外面一个自执行函数
-  ;(function () {
-    // 定义一个对象，用于存储模块
-    // 模块路径作为对象 key 值
-    var __webpack_modules__ = {
-      './src/js/format.js': function (module) {
-        const dateFormat = (date) => {
-          return '2020-12-12'
-        }
-  
-        const priceFormat = (price) => {
-          return '100.00'
-        }
-  
-        module.exports = {
-          dateFormat,
-          priceFormat
-        }
-      },
-      './src/js/math.js': function (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
-        'use strict'
-        // 调用 __webpack_require__.r，记录 __esModule 为 true
-        __webpack_require__.r(__webpack_exports__)
-  
-        // // 调用 __webpack_require__.d，将 __webpack_exports__ 没有的代理到 { sum: Function, mul: Function }
-        __webpack_require__.d(__webpack_exports__, {
-          sum: function () {
-            return sum
-          },
-          mul: function () {
-            return mul
-          }
-        })
-  
-        const sum = (num1, num2) => {
-          return num1 + num2
-        }
-  
-        const mul = (num1, num2) => {
-          return num1 * num2
-        }
-      }
+  // 为 __webpack_require__ 这个函数对象添加一个属性 o --> function
+  !(function () {
+    // 这个 o 函数的作用：判断某个对象是否包含某个 key
+    __webpack_require__.o = function (obj, prop) {
+      return Object.prototype.hasOwnProperty.call(obj, prop)
     }
-  
-    // 这个对象用于存储加载过的模块
-    var __webpack_module_cache__ = {}
-  
-    // 当加载一个模块时，都会通过这个函数来加载
-    // moduleId 就是需要加载的模块路径
-    function __webpack_require__(moduleId) {
-      // 1、判断是否加载过这个模块
-      if (__webpack_module_cache__[moduleId]) {
-        return __webpack_module_cache__[moduleId].exports
+  })()
+
+  // 为 __webpack_require__ 这个函数对象加一个属性 r --> function
+  !(function () {
+    __webpack_require__.r = function (exports) {
+      if (typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+        Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' })
       }
-  
-      // 2、给 module 变量和 __webpack_module_cache__[moduleId] 赋值了同一个对象
-      // 这样做的好处：两者同时指向同一个对象，那么，当这个被指向的对象改变，那么这两者的也会同时改变
-      var module = __webpack_module_cache__[moduleId] = { exports: {} }
-  
-      // 3、执行 __webpack_modules__ 相应模块的函数
-      __webpack_modules__[moduleId](module, module.exports, __webpack_require__)
-  
-      // 4、导出 module.exports 这个对象
-      return module.exports
+      // 为 module 的 exports 对象设置一个 __esModule，值为 true
+      // 目的就是标记当前这个模块是不是 es module，以便后面如果需要，能够用到这个信息
+      Object.defineProperty(exports, '__esModule', { value: true })
     }
-  
-    !(function () {
-      __webpack_require__.n = function (module) {
-        var getter =
-          module && module.__esModule
-            ? function () {
-                return module['default']
-              }
-            : function () {
-                return module
-              }
-        __webpack_require__.d(getter, { a: getter })
-        return getter
+  })()
+
+  var __webpack_exports__ = {}
+
+  // 自执行函数实现代码逻辑
+  !(function () {
+    __webpack_require__.r(__webpack_exports__)
+    var _js_math__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__('./src/js/math.js')
+
+    console.log((0, _js_math__WEBPACK_IMPORTED_MODULE_0__.mul)(20, 30))
+    console.log((0, _js_math__WEBPACK_IMPORTED_MODULE_0__.sum)(20, 30))
+  })()
+})()
+```
+
+
+
+#### CommonJS 和 ES Module 相互导入
+
+这个其实就是上面两个的结合，最主要还是 webpack 的打包产物，内部通过一个对象存储所有的模块，然后通过 `__webpack_require__` 去加载模块，实现了抹平
+
+```js
+// 外面一个自执行函数
+;(function () {
+  // 定义一个对象，用于存储模块
+  // 模块路径作为对象 key 值
+  var __webpack_modules__ = {
+    './src/js/format.js': function (module) {
+      const dateFormat = (date) => {
+        return '2020-12-12'
       }
-    })()
-  
-    // 给 __webpack_require__ 函数对象加一个 d --> function
-    !(function () {
-      __webpack_require__.d = function (exports, definition) {
-        for (var key in definition) {
-          // 如果一个 key 在 definition 中，而不在 exports 中
-          if (__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-            // 为 module 的 exports 代理到 definition，访问 module.exports 的 key 会被代理到 definition，访问
-            Object.defineProperty(exports, key, { enumerable: true, get: definition[key] })
-          }
-        }
+
+      const priceFormat = (price) => {
+        return '100.00'
       }
-    })()
-  
-    // 给 __webpack_require__ 函数对象加一个 o --> function
-    !(function () {
-      // 这个函数的作用是判断对象是否包含某个 key
-      __webpack_require__.o = function (obj, prop) {
-        return Object.prototype.hasOwnProperty.call(obj, prop)
+
+      module.exports = {
+        dateFormat,
+        priceFormat
       }
-    })()
-  
-    // // 给 __webpack_require__ 函数对象加一个 r --> function
-    !(function () {
-      __webpack_require__.r = function (exports) {
-        if (typeof Symbol !== 'undefined' && Symbol.toStringTag) {
-          Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' })
-        }
-        // 给 exports 设置 __esModule，值为 true
-        Object.defineProperty(exports, '__esModule', { value: true })
-      }
-    })()
-  
-    var __webpack_exports__ = {}
-  
-    // 自执行函数实现代码逻辑
-    !(function () {
+    },
+    './src/js/math.js': function (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
       'use strict'
+      // 调用 __webpack_require__.r，记录 __esModule 为 true
       __webpack_require__.r(__webpack_exports__)
-      var _js_format__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__('./src/js/format.js')
-      var _js_format__WEBPACK_IMPORTED_MODULE_0___default = __webpack_require__.n(_js_format__WEBPACK_IMPORTED_MODULE_0__)
-  
-      const { sum, mul } = __webpack_require__('./src/js/math.js')
-  
-      console.log(sum(20, 30))
-      console.log(mul(20, 30))
-  
-      console.log((0, _js_format__WEBPACK_IMPORTED_MODULE_0__.dateFormat)('aaa'))
-      console.log((0, _js_format__WEBPACK_IMPORTED_MODULE_0__.priceFormat)('bbb'))
-  
-      console.log(abc)
-    })()
+
+      // // 调用 __webpack_require__.d，将 __webpack_exports__ 没有的代理到 { sum: Function, mul: Function }
+      __webpack_require__.d(__webpack_exports__, {
+        sum: function () {
+          return sum
+        },
+        mul: function () {
+          return mul
+        }
+      })
+
+      const sum = (num1, num2) => {
+        return num1 + num2
+      }
+
+      const mul = (num1, num2) => {
+        return num1 * num2
+      }
+    }
+  }
+
+  // 这个对象用于存储加载过的模块
+  var __webpack_module_cache__ = {}
+
+  // 当加载一个模块时，都会通过这个函数来加载
+  // moduleId 就是需要加载的模块路径
+  function __webpack_require__(moduleId) {
+    // 1、判断是否加载过这个模块
+    if (__webpack_module_cache__[moduleId]) {
+      return __webpack_module_cache__[moduleId].exports
+    }
+
+    // 2、给 module 变量和 __webpack_module_cache__[moduleId] 赋值了同一个对象
+    // 这样做的好处：两者同时指向同一个对象，那么，当这个被指向的对象改变，那么这两者的也会同时改变
+    var module = __webpack_module_cache__[moduleId] = { exports: {} }
+
+    // 3、执行 __webpack_modules__ 相应模块的函数
+    __webpack_modules__[moduleId](module, module.exports, __webpack_require__)
+
+    // 4、导出 module.exports 这个对象
+    return module.exports
+  }
+
+  !(function () {
+    __webpack_require__.n = function (module) {
+      var getter =
+        module && module.__esModule
+          ? function () {
+              return module['default']
+            }
+          : function () {
+              return module
+            }
+      __webpack_require__.d(getter, { a: getter })
+      return getter
+    }
   })()
-  ```
+
+  // 给 __webpack_require__ 函数对象加一个 d --> function
+  !(function () {
+    __webpack_require__.d = function (exports, definition) {
+      for (var key in definition) {
+        // 如果一个 key 在 definition 中，而不在 exports 中
+        if (__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+          // 为 module 的 exports 代理到 definition，访问 module.exports 的 key 会被代理到 definition，访问
+          Object.defineProperty(exports, key, { enumerable: true, get: definition[key] })
+        }
+      }
+    }
+  })()
+
+  // 给 __webpack_require__ 函数对象加一个 o --> function
+  !(function () {
+    // 这个函数的作用是判断对象是否包含某个 key
+    __webpack_require__.o = function (obj, prop) {
+      return Object.prototype.hasOwnProperty.call(obj, prop)
+    }
+  })()
+
+  // // 给 __webpack_require__ 函数对象加一个 r --> function
+  !(function () {
+    __webpack_require__.r = function (exports) {
+      if (typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+        Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' })
+      }
+      // 给 exports 设置 __esModule，值为 true
+      Object.defineProperty(exports, '__esModule', { value: true })
+    }
+  })()
+
+  var __webpack_exports__ = {}
+
+  // 自执行函数实现代码逻辑
+  !(function () {
+    'use strict'
+    __webpack_require__.r(__webpack_exports__)
+    var _js_format__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__('./src/js/format.js')
+    var _js_format__WEBPACK_IMPORTED_MODULE_0___default = __webpack_require__.n(_js_format__WEBPACK_IMPORTED_MODULE_0__)
+
+    const { sum, mul } = __webpack_require__('./src/js/math.js')
+
+    console.log(sum(20, 30))
+    console.log(mul(20, 30))
+
+    console.log((0, _js_format__WEBPACK_IMPORTED_MODULE_0__.dateFormat)('aaa'))
+    console.log((0, _js_format__WEBPACK_IMPORTED_MODULE_0__.priceFormat)('bbb'))
+
+    console.log(abc)
+  })()
+})()
+```
 
 
 
@@ -450,9 +456,11 @@ npx 的作用：
 
 
 
-### 基础出入口
+### 出入口
 
-**入口：**
+
+
+#### 入口
 
 ```js
 module.exports = {
@@ -460,21 +468,32 @@ module.exports = {
 }
 ```
 
-**上下文：**
+
+
+#### 上下文
 
 context：代表着基础目录，必须为绝对路径，用于从配置中解析入口点
 
-使用场景：
+```js
+const path = require('path');
 
-比如，webpack 配置并不是写在 根目录下，而是这样：
+module.exports = {
+  context: path.resolve(__dirname, 'src'), // 将根目录设置为项目下的 'src' 文件夹
+  entry: './index.js', // 此时入口文件是 'src/index.js'
+};
+```
 
-|-----config
 
-|-----|------wbepack.config.js
 
-|-----src
+使用场景：比如，webpack 配置并不是写在根目录下，而是这样：
 
-|-----|-----index.js
+```
+programs/
+  ├── config                          
+  │   ├── wbepack.config.js  
+  ├── src
+  │   ├── index.js
+```
 
 那么就需要加上 context，而不是在入口文件直接 `entry: "../src/index.js"`
 
@@ -487,38 +506,57 @@ module.exports = {
 }
 ```
 
+- path.resolve：将多个路径片段解析为一个绝对路径
 
 
-**出口：**
+
+#### 出口
 
 - filename：出口文件名
 
 - path：出口文件全局路径，这个必须是绝对路径
 
-- publicPath：指定 index.html 文件打包引用的一个基本路径
+- publicPath：定义所有由 webpack 处理的文件（JS、CSS、图片、字体等）在浏览器中被引用时的基础路径，影响最终index.html 中引用资源的路径前缀
 
-  - 的默认值是一个空字符串，所以打包后引入 js 文件时，路径是 bundle.js
+  - 默认值是一个空字符串，所以打包后引入 js 文件时，路径是 bundle.js
 
      ![](./imgs/img20.png)
 
-  - 在开发中，我们也将其设置为 / ，路径是 /bundle.js，那么浏览器会根据所在的域名+路径去请求对应的资源
+  - 在开发中，也将其设置为 / ，路径是 /bundle.js，那么浏览器会根据所在的域名+路径去请求对应的资源
 
      ![](./imgs/img21.png)
 
   - 如果希望在本地直接打开 html 文件来运行，会将其设置为 ./，路径是 ./bundle.js，可以根据相对路径去查找资源
 
      ![](./imgs/img22.png)
+     
+  - 当资源需要从 CDN 加载时，可以将 publicPath 设置为 CDN 的 URL
 
-  > 思考：类似 vue 的脚手架，默认就是 `publicPath: '/'`，那么直打开 index.html，是没有类似 `http://localhost:3000/` 这样的一个服务，而是协议头类似 `file://` 这样的，那么按照 域名+路径 的方式就加载不到。所以可以改为 ./ 的形式
+  > 常见的资源 404 错误，通常是 publicPath 配置不正确导致浏览器无法找到资源
+  >
+  > 
+  >
+  > 比如：类似 vue 的脚手架，默认就是 `publicPath: '/'`，那么直打开 index.html，是没有类似 `http://localhost:3000/` 这样的一个服务，而是协议头类似 `file://` 这样的，那么按照 域名+路径 的方式就加载不到。所以可以改为 ./ 的形式
 
-- chunkFilename：对非入口的 chunk 命名（例如异步代码单独打包出来的文件，配合 /* webpackChunkName: 'sub' */ 这个魔法注释）
+- chunkFilename：
+
+  - 控制非入口 chunk 文件的输出文件名（例如**异步代码**单独打包出来的文件，配合 /* webpackChunkName: 'sub' */ 这个魔法注释）
+    - 当使用动态导入（如 import() 语法）进行代码分割时，生成的分割代码块会使用 chunkFilename 定义的命名规则
+    - 这些代码块不是由 entry 入口直接产生的，而是在运行时动态加载的
+  - 控制分割代码的文件名格式，有助于实现长期缓存策略，特别是使用 [contenthash] 时
+
+
+
+配置示例：
 
 ```js
 moodule.exports: {
     // 出口
     output: {
         filename: "js/bundle.js", // 出口文件名
-        path: path.resolve(__dirname, "dist") // 输出的全局路径，这个必须是绝对路径
+        path: path.resolve(__dirname, "dist"), // 输出的全局路径，这个必须是绝对路径
+        publicPath: MODE === 'development' ? '' : '',
+        chunkFilename: 'js/[name]_chunk.[contenthash:8].js'
     }
 }
 ```
@@ -562,7 +600,11 @@ module.exports = {
 
 
 
-### css/scss/less 这些 loader
+### 处理样式 style
+
+一般使用 css/scss/less 这些 loader
+
+
 
 安装：
 
@@ -572,7 +614,7 @@ npm i style-loader css-loader sass-loader node-sass -D
 
 使用：
 
-```
+```js
 {
     test: /\.css$/,
     use: [
@@ -593,9 +635,11 @@ npm i style-loader css-loader sass-loader node-sass -D
 
 
 
-### 图片 loader
+### 处理图片
 
-使用 file-loader 或者 url-loader
+
+
+####url-loader & file-loader
 
 
 
@@ -639,11 +683,27 @@ npm i url-loader -D
 
 
 
-### 当图片是直接通过 img 便签引入，需要使用 html-withimg-loader
+#### html-withimg-loader
+
+`html-withimg-loader` 是一个 Webpack 加载器(loader)，专门用于处理 HTML 文件中的图片引用问题。它的主要功能是解析 HTML 文件中的 `<img>` 标签，并将这些图片资源纳入 Webpack 的打包体系
+
+
+
+场景：当图片是在 public/index.html 直接通过 img 便签引入，这时需要使用 html-withimg-loader 处理 
+
+
+
+安装
+
+```shell
+npm i html-withimg-loader -D
+```
+
+
+
+使用
 
 ```
-npm i html-withimg-loader -D
-
 {
     // 使用这个要将 url-loader 的引入规范改为 CommonJS
     test: /\.(html|htm)$/,
@@ -653,7 +713,11 @@ npm i html-withimg-loader -D
 
 
 
-###  编译 html 使用 html-webpack-pligin
+### 编译 HTML
+
+
+
+#### html-webpack-pligin 插件
 
 在 webpack 中，是需要一个 html 模板的，这个 html 模板可以通过 html-webpack-pligin 自动生成默认模板；当然，也可以新建一个 index.html 模板，一般新建一个，因为可以通过 ejs 语法动态插值。通过 html-webpack-pligin 根据自定义模板生成的 html 会自动引入 bundle.js。除此以外，还可以做一些优化 html 的工作，比如压缩一行等。
 
@@ -735,7 +799,34 @@ new DefinePlugin({
 
 
 
-如果使用了 `<link rel="icon" href="<%= BASE_URL %>favicon.ico">`，需要将 ico 复制到 dist
+#### DefinePlugin 插件
+
+- 定义全局常量，创建在编译时可用的全局变量，这些变量在打包时会被直接替换为对应的值
+- 环境变量注入，常用于注入环境变量，如 process.env.NODE_ENV
+
+基本使用
+
+```js
+const { DefinePlugin } = require('webpack')
+
+module.exports = {
+
+  plugins: [
+    new DefinePlugin({
+      BASE_URL: '"./"',
+      'process.env.NODE_ENV': JSON.stringify('production') // 或 development 等
+    })
+  ]
+};
+```
+
+
+
+#### copy-webpack-plugin 插件
+
+如果使用了 `<link rel="icon" href="<%= BASE_URL %>favicon.ico">`，需要将 favicon.ico 复制到 dist，此时需要 copy-webpack-plugin 插件。copy-webpack-plugin 对于那些不需要通过 webpack 处理的静态资源非常有用。
+
+
 
 安装：
 
@@ -745,13 +836,15 @@ npm i copy-webpack-plugin@6.3.2 -D
 
 > 注意，可能新版本 copy-webpack-plugin 有问题，所以安装 6.3.2 版本
 
-使用：
 
-在 patterns 中设置复制规则
+
+使用：在 patterns 中设置复制规则
 
 - **from：**设置从哪一个源中开始复制
 - **to：**复制到的位置，可以省略，会默认复制到打包的目录下
-- **globOptions：**设置一些额外的选项，比如可以编写需要忽略的文件：
+- **globOptions：**设置一些额外的选项，比如可以编写需要忽略的文件
+
+复制时会保留原始的目录结构，例如：public/images/logo.png 会被复制到 dist/images/logo.png
 
 ```js
 const CopyWebpackPlugin = require('copy-webpack-plugin')
@@ -761,8 +854,9 @@ new CopyWebpackPlugin({
         {
             from: 'public',
             globOptions: {
+              	// 需要忽略的文件
                 ignore: [
-                    '**/index.html',
+                    '**/index.html', // 已经由 HtmlWebpackPlugin 处理，所以这里忽略它
                     '**/.DS_Store' // mac 系统忽略这个
                 ]
             }
@@ -780,7 +874,9 @@ new CopyWebpackPlugin({
 - 使用 webpack 的 watch 模式
 - 使用 webpack-dev-server
 
-**使用 webpack 的 watch 模式**
+
+
+#### webpack 的 watch 模式
 
 1. 在 webpack.config.js 中添加 `watch: true`
 
@@ -798,13 +894,17 @@ new CopyWebpackPlugin({
    }
    ```
 
+
+
 缺点：
 
 - 只要有一个依赖文件发生变化，那么就会重新编译所有源代码
 - 编译成功后，都需要生成新的 bundle.js 文件，那么就需要进行频繁的文件写入操作
 - 不会自动刷新浏览器
 
-**使用 webpack-dev-server**
+
+
+#### webpack-dev-server
 
 webpack-dev-server 在编译之后不会写入到任何输出文件。而是将 bundle 文件保留在内存中。实现这一点借助了一个库 [memory-fs](https://github.com/webpack/memory-fs) 这个库是由 webpack 本身维护的，后来不再使用，改为使用 [memfs](https://github.com/streamich/memfs) 
 
@@ -830,134 +930,29 @@ npm i webpack-dev-server -D
 
 
 
-**模块热替换HMR**
-
-模块热替换是指在应用程序运行过程中，替换、添加、删除模块，而**无需重新刷新整个页面**
-
-- 不重新加载整个页面，这样可以保留某些应用程序的状态不丢失
-- 修改了css、js源代码，会立即在浏览器更新
-
-使用 HMR： webpack-dev-server 已经支持 HMR，需要配置开启一下即可
-
-> 在不开启 HMR 的情况下，当我们修改了源代码之后，整个页面会自动刷新，使用的是 live reloading
-
-在 webpack.config.js 中：
+**devServer 配置一览**
 
 ```js
-module.exports: {
-    devServer: {
-      hot: true // 打开 HMR 模块热替换
-    }
-}
-```
+devServer: {
+  overlay: true,        // 配合 eslint 实时在浏览器弹出语法错误
+  publicPath: '',       // 所有资源引入公共路径前缀
+  watchOptions: {
+    ignored: /node_modules/,  // 忽略 node_modules
+  },
+  compress: true,       // 启动 gzip 压缩
+  port: 3000,           // 端口号
+  open: true,           // 自动打开浏览器
+  hot: true,            // 打开 HMR 模块热替换
+  clientLogLevel: 'none', // 不显示启动服务器日志信息
+  quiet: true,          // 除了一些基本启动信息，其他内容不显示
 
-然后需要指定哪些模块发生变化时，需要使用热更新。在入口文件处
-
-```js
-import './hmr_test';
-
-if (module.hot) {
-  module.hot.accept('./hmr_test.js', () => {});
-}
-```
-
-那么在项目开发中，每个引入文件都需要这样子配置太过于麻烦。其实 vue、react 都提供了方案去实现
-
-- vue：使用 vue-loader，支持 vue 组件的 HMR
-- react：使用 react-refresh
-
-
-
-HMR 基本原理：
-
-![](./imgs/img41.png)
-
-右侧`Server`端使用`webpack-dev-server`去启动本地服务，内部实现主要使用了`webpack`、`express`、`websocket`
-
-- 使用`express`启动本地服务，当浏览器访问资源时对此做响应。
-
-- 服务端和客户端使用`websocket`实现长连接
-
-- `webpack`监听源文件的变化，即当开发者保存文件时触发`webpack`的重新编译
-
-  - 每次编译都会生成`hash值`、`已改动模块的json文件`、`已改动模块代码的js文件`
-  - 编译完成后通过`socket`向客户端推送当前编译的`hash戳`
-
-- 客户端的`websocket`监听到有文件改动推送过来的`hash戳`，会和上一次对比
-
-  - 会先判断是浏览器刷新还是模块热更新，如果是浏览器刷新，那么直接刷新，不会有后续
-
-  - 如果是热更新，会判断 hash 是否一致，一致则走缓存
-
-  - 不一致则通过`ajax`和`jsonp`向服务端获取最新资源，会得到两个文件 .json（manifest文件）和 .js 文件（update chunk）
-
-- 浏览器拿到两个新的文件后，通过 HMR runtime 机制，加载这两个文件，并且针对修改的模块进行更新；分三步：
-
-  - 找出过期模块 `outdatedModules` 和过期依赖 `outdatedDependencies` ；
-  - 从缓存中删除过期模块、依赖和所有子元素的引用；
-  - 将新模块代码添加到 modules 中，当下次调用 `__webpack_require__` (webpack 重写的 `require` 方法)方法的时候，就是获取到了新的模块代码了。
-
-- 现在新代码已经替换旧代码，但是业务代码并不知道这些变化，因此需要通过 `accept`事件通知应用层使用新的模块进行“局部刷新”：
-
-  ```js
-  if (module.hot) {
-    module.hot.accept('./library.js', function() {
-      // 使用更新过的 library 模块执行某些操作...
-    })
-  }
-  ```
-
-
-
-**devServer 的 publicPath**
-
-- 默认值就是 /，也就是说直接访问端口即可访问其中的资源 `http://localhost:8080`
-- 如果将其设置为 /www，那么在访问的时候就需要带上 `http://localhost:8080/www`
-- 那么，bundle.js 通过 `http://localhost:8080/bundle.js` 也是无法访问的，**需要将 output.publicPath 也设置为 /www；并且官方也是建议 devServer 的 publicPath 和 output 的 publicPath 一致**
-
-```js
-module.exports: {
-    output: {
-        publicPath: '/www'
+  // 服务器代理 ---> 解决开发环境中的跨域问题
+  proxy: {
+    '/api': {
+      target: 'http://localhost:8888',
+      changeOrigin: true
     },
-    devServer: {
-        publicPath: '/www'
-    }
-}
-```
-
-> 一般也不怎么去配置 devServer 的 publicPath，直接访问 `http://localhost:8080` 即可
-
-
-
-**devServer 的 contentBase**
-
-用于提供静态资源，只有在你想要提供静态文件时才需要，**可以不是本地打包出来的静态资源**
-
-比如：文件夹中有 /public/mock.json 
-
-```js
-const path = require('path');
- 
-module.exports = {
-  devServer: {
-    contentBase: path.join(__dirname, 'public')
-  }
-};
-```
-
-访问 http://localhost:8080/mock.json 即可
-
-还可搭配 contentBasePublicPath 使用，比如上面这个例子把 public 文件夹抹平了，实际生产环境，为了区分，需要加上文件前缀用于区分，最终访问的地址 http://localhost:8080/data/mock.json；可以搭配 contentBasePublicPath 来实现
-
-```js
-const path = require('path');
- 
-module.exports = {
-  devServer: {
-    contentBase: path.join(__dirname, 'public'),
-    contentBasePublicPath: '/data'
-  }
+  },
 }
 ```
 
@@ -1007,7 +1002,7 @@ localhost 和 0.0.0.0 的区别
 
 主要作用是解决开发环境下的跨域问题
 
-例如有一个服务，在 http://localhost:8888：
+例如有一个后端服务，在 http://localhost:8888：
 
 ```js
 const express = require('express');
@@ -1133,7 +1128,7 @@ devServer: {
 
 
 
-proxy 的 changeOrigin：我们的真实请求，是需要通过 http://localhost:8888 来请求的，但是这里因为使用了代理，所以浏览器里面看到的是通过 http://localhost:3000 发送的请求，这会可能有问题：当服务器开启了请求来源的校验的时候，发现端口是 3000，不符合 8888，那么就会禁止请求。此时就需要将 changeOrigin 的值设置为 true,那么会将代理请求中的 headers 中的 host 属性修改为 proxy 的 target 一致
+**proxy 的 changeOrigin**：比如真实请求，是需要通过 http://localhost:8888 来请求的，但是这里因为使用了代理，所以浏览器里面看到的是通过 http://localhost:3000 发送的请求，这会可能有问题：当服务器开启了请求来源的校验的时候，发现端口是 3000，不符合 8888，那么就会禁止请求。此时就需要将 changeOrigin 的值设置为 true,那么会将代理请求中的 headers 中的 host 属性修改为 proxy 的 target 一致
 
 怎么确定有修改到：webpack-dev-server 开启本地服务是使用的 http-proxy-middleware 这个包，这个包里面使用了 http-proxy，查看这个包源码可以确定
 
@@ -1157,9 +1152,182 @@ webpack-dev-server 的 historyApiFallback 是基于[connect-history-api-fallback
 
 
 
-### 每次打包前先清空出口目录 clean-webpack-plugin
+**devServer 的 contentBase**
 
+用于提供静态资源，只有在你想要提供静态文件时才需要，**可以不是本地打包出来的静态资源**
+
+比如：文件夹中有 /public/mock.json 
+
+```js
+const path = require('path');
+ 
+module.exports = {
+  devServer: {
+    contentBase: path.join(__dirname, 'public')
+  }
+};
 ```
+
+访问 http://localhost:8080/mock.json 即可
+
+还可搭配 contentBasePublicPath 使用，比如上面这个例子把 public 文件夹抹平了，实际生产环境，为了区分，需要加上文件前缀用于区分，最终访问的地址 http://localhost:8080/data/mock.json；可以搭配 contentBasePublicPath 来实现
+
+```js
+const path = require('path');
+ 
+module.exports = {
+  devServer: {
+    contentBase: path.join(__dirname, 'public'),
+    contentBasePublicPath: '/data'
+  }
+}
+```
+
+
+
+**devServer 的 publicPath**
+
+- 默认值就是 /，也就是说直接访问端口即可访问其中的资源 `http://localhost:8080`
+- 如果将其设置为 /www，那么在访问的时候就需要带上 `http://localhost:8080/www`
+- 那么，bundle.js 通过 `http://localhost:8080/bundle.js` 也是无法访问的，**需要将 output.publicPath 也设置为 /www；并且官方也是建议 devServer 的 publicPath 和 output 的 publicPath 一致**
+
+```js
+module.exports: {
+    output: {
+        publicPath: '/www'
+    },
+    devServer: {
+        publicPath: '/www'
+    }
+}
+```
+
+> 一般也不怎么去配置 devServer 的 publicPath，直接访问 `http://localhost:8080` 即可
+
+
+
+#### 模块热替换 HMR
+
+模块热替换是指在应用程序运行过程中，替换、添加、删除模块，而**无需重新刷新整个页面**
+
+- 不重新加载整个页面，这样可以保留某些应用程序的状态不丢失
+- 修改了css、js源代码，会立即在浏览器更新
+
+
+
+使用 HMR： webpack-dev-server 已经支持 HMR，需要配置开启一下即可
+
+> 在不开启 HMR 的情况下，当我们修改了源代码之后，整个页面会自动刷新，使用的是 live reloading
+
+
+
+在 webpack.config.js 中，使用 webpack-dev-server 配合 HotModuleReplacementPlugin 开启 HMR：
+
+```js
+module.exports: {
+    devServer: {
+      hot: true // 打开 HMR 模块热替换
+    },
+    plugins: [
+      new webpack.HotModuleReplacementPlugin(),
+   }
+}
+```
+
+> webpack-dev-server 3.x 可以不用手动配置 HotModuleReplacementPlugin，因为内部判断是否 hot: true，如果是会自动加 HotModuleReplacementPlugin 插件
+>
+> 具体查看：https://github.com/webpack/webpack-dev-server/blob/8bbef6adf6ae5f6a3109ecd4a6246223d2f77cb2/lib/utils/addEntries.js#L153
+
+
+
+然后需要指定哪些模块发生变化时，需要使用热更新。在入口文件处
+
+```js
+import './hmr_test';
+
+if (module.hot) {
+  module.hot.accept('./hmr_test.js', () => {});
+}
+```
+
+
+
+但是这有个问题，项目开发中，每个引入文件都需要这样子配置太过于麻烦。可以使用 `hot-module-replacement-loader` 这个 loader 自动注入 HMR 代码：
+
+```js
+module.exports = {
+
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        use: ['babel-loader', 'hot-module-replacement-loader']
+      }
+    ]
+  }
+};
+```
+
+
+
+其实一些第三方框架比如 vue、react 都提供了方案去实现
+
+- vue：使用 vue-loader，支持 vue 组件的 HMR
+- react：使用 react-refresh
+
+
+
+**HMR 基本原理：**
+
+建议参考：
+
+- [一文了解 Webpack 热更新 (HMR) 原理](https://juejin.cn/post/7300118821531942927?searchId=20250606152312EF50823D2CA7896D5B0C)
+- [webpack5之HMR原理探究](https://juejin.cn/post/7413774752833421349?searchId=2025060615371898C89382C7BE50505E89#heading-5)
+- [Webpack HMR（热更新）的实现原理吧](https://juejin.cn/post/7345727329410187276?searchId=2025060615371898C89382C7BE50505E89)
+
+![](./imgs/img41.png)
+
+右侧`Server`端使用`webpack-dev-server`去启动本地服务，内部实现主要使用了`webpack`、`express`、`websocket`
+
+- 使用`express`启动本地服务，当浏览器访问资源时对此做响应。
+
+- 服务端和客户端使用`websocket`实现长连接
+
+- `webpack`监听源文件的变化，即当开发者保存文件时触发`webpack`的重新编译
+
+  - 每次编译都会生成`hash值`、`已改动模块的json文件`、`已改动模块代码的js文件`
+  - 编译完成后通过`socket`向客户端推送当前编译的`hash戳`
+
+- 客户端的`websocket`监听到有文件改动推送过来的`hash戳`，会和上一次对比
+
+  - 会先判断是浏览器刷新还是模块热更新，如果是浏览器刷新，那么直接刷新，不会有后续
+
+  - 如果是热更新，会判断 hash 是否一致，一致则走缓存
+
+  - 不一致则通过`ajax`和`jsonp`向服务端获取最新资源，会得到两个文件 .json（manifest文件）和 .js 文件（update chunk）
+
+- 浏览器拿到两个新的文件后，通过 HMR runtime 机制，加载这两个文件，并且针对修改的模块进行更新；分三步：
+
+  - 找出过期模块 `outdatedModules` 和过期依赖 `outdatedDependencies` ；
+  - 从缓存中删除过期模块、依赖和所有子元素的引用；
+  - 将新模块代码添加到 modules 中，当下次调用 `__webpack_require__` (webpack 重写的 `require` 方法)方法的时候，就是获取到了新的模块代码了。
+
+- 现在新代码已经替换旧代码，但是业务代码并不知道这些变化，因此需要通过 `accept`事件通知应用层使用新的模块进行“局部刷新”：
+
+  ```js
+  if (module.hot) {
+    module.hot.accept('./library.js', function() {
+      // 使用更新过的 library 模块执行某些操作...
+    })
+  }
+  ```
+
+
+
+### 清空出口目录 clean-webpack-plugin
+
+```js
 const {
     CleanWebpackPlugin
 } = require("clean-webpack-plugin") // webpack4 之后需要这样引入
@@ -1176,7 +1344,7 @@ plugins: [
 
 -   注意：抽离 css 需要配置一下 miniCssExtractPlugin 的 publicPath， 不然 CSS 里面的图片路径是以 CSS 目录为根目录的
 
-```
+```js
 const miniCssExtractPlugin = require("mini-css-extract-plugin") // 抽离 css, 将 css 从 js 中抽离出来，减少 js 体积，有利于减少页面加载时间
 
 {
@@ -1218,7 +1386,7 @@ plugins: [
 
 
 
-### 配置 css 浏览器兼容
+### css 浏览器兼容
 
 使用 postcss-loader + autoprefixer
 
@@ -1432,7 +1600,7 @@ plugins: [
 
 ### babel 做 js 兼容性处理
 
-**什么是babel：**
+#### 什么是babel
 
 babel 是一个工具链，用于将 ES6+ 的代码转换为向下兼容的 JS 代码，包括：语法转换（jsx、ts 等）、源代码转换、Polyfill 等。
 
@@ -1440,7 +1608,7 @@ babel 是一个工具链，用于将 ES6+ 的代码转换为向下兼容的 JS �
 
 
 
-**babel 基本原理：**
+#### babel 基本原理
 
 > 备注：代码在 test/babel 中
 
@@ -1490,7 +1658,7 @@ babel 其实就是一个转译器，将我们的源代码转换为另外一种�
 
 
 
-**babel-loder 的使用：**
+#### babel-loder 的使用
 
 - babel 不能直接对 es6 语法进行转换，需要依赖于 babel 的 插件，一般使用 @babel/preset-env
 
@@ -1542,7 +1710,7 @@ npm i babel-loader @babel/core @babel/preset-env core-js -D
 
 
 
-**babel 的配置文件**
+#### babel 的配置文件
 
 babel 的配置信息可以单独配置在一个文件里面
 
@@ -1587,7 +1755,7 @@ module.exports = {
 
 
 
-**认识 polyfill**
+#### 认识 polyfill
 
 主要的意思就是垫片、补丁
 
@@ -1624,9 +1792,24 @@ module.exports = {
 
 
 
-**了解 Plugin-transform-runtime**
+#### plugin-transform-runtime
 
 在使用 useBuiltIns + corejs 配置 polyfill 的时候，默认情况是添加的所有特性都是全局的；如果我们正在编写一个工具库，这个工具库需要使用 polyfill； 别人在使用我们工具时，工具库通过 polyfill 添加的特性，可能会污染它们的代码；所以，当编写工具时，babel 更推荐使用一个插件： @babel/plugin-transform-runtime 来完成polyfill 的功能
+
+
+
+主要解决以下两个问题：
+
+- **复用辅助代码，减少打包体积**
+  - Babel 在转换语法（如 `class`、`async/await`）时会生成一些**辅助函数（helper functions）**，例如 `_classCallCheck`、`_asyncToGenerator`
+  - 默认情况下，这些辅助函数会**直接插入到每个文件中**，导致重复代码
+  - **`transform-runtime` 会将这些辅助函数从 `@babel/runtime` 中引用**，避免重复定义
+
+- **避免全局污染（Polyfill 按需引入时）**：
+  - 当使用 `@babel/preset-env` + `useBuiltIns: "usage"` 按需引入 Polyfill 时，Babel 会直接在全局作用域（如 `window.Promise`）或原型链（如 `Array.prototype.includes`）上添加方法
+  - **`transform-runtime` 会以非污染方式引入 Polyfill**，通过模块化引用（如 `_Promise` 代替全局 `Promise`），适合开发库（Library）时避免影响宿主环境
+
+
 
 安装：
 
@@ -1634,12 +1817,16 @@ module.exports = {
 npm install @babel/plugin-transform-runtime -D
 ```
 
+
+
 还有就是对应安装对应版本的 corejs3
 
 | false    | npm i @babel/runtime -S         |
 | -------- | ------------------------------- |
 | corejs 2 | npm i @babel/runtime-corejs2 -S |
 | corejs 3 | npm i @babel/runtime-corejs3 -S |
+
+
 
 使用：
 
@@ -1664,13 +1851,15 @@ module.exports = {
 
 
 
-**babel 对 JSX 的转换**
+#### babel 对 JSX 的转换
 
-只需要安装：
+使用插件 `@babel/preset-react`，安装：
 
 ```js
 npm install @babel/preset-react -D
 ```
+
+
 
 使用：
 
@@ -1686,7 +1875,7 @@ module.exports = {
 
 
 
-**babel 对 ts 的准换**
+#### babel 对 ts 的准换
 
 在 webpack 中使用 ts，有两种方案：
 
@@ -1775,7 +1964,7 @@ module.exports = {
 
 
 
-**了解 babel 的 Stage-X**
+#### babel 的 Stage-X
 
 主要就是分阶段加入不同的语言特性
 
@@ -1804,7 +1993,7 @@ module.exports = {
 
 
 
-**babel 的 preset 与 plugin**
+#### babel 的 preset 与 plugin
 
 - Babel Plugin 一般尽可能拆成小的力度，开发者可以按需引进。比如对 ES6 转 ES5 的功能，Babel 官方拆成了 20+ 个 Plugin。  
 
@@ -2064,7 +2253,15 @@ resolve 常用的属性：
 
 
 
+主要分为 开发环境 和 生产环境 进行优化
+
+
+
 ### 开发环境性能优化
+
+
+
+开发环境一般关注的是开发效率，比较常见的手段是开启 HMR 和 sourcemap
 
 
 
@@ -2129,7 +2326,7 @@ devServer: {
 1. 在 webpack 打包的时候，根据 devtool 生成 source-map
 
 2. 在打包后的产物 bundle.js 最后添加一行注释 `//# sourceMappingURL=bundle.js.map`
-3. 浏览器会这行注释，查找响应的 source-map
+3. 浏览器会根据这行注释，查找响应的 source-map
 
 **webpack 中 devtool 配置：**
 
@@ -2191,7 +2388,7 @@ webpack 对于 source-map 提供了 26 个值，是可以进行多组合的
 
 组合规则：
 
-- inline-|hidden-|eval：三个值时三选一
+- inline-|hidden-|eval：三个值三选一
 
 - nosources：可选值
 
@@ -2214,6 +2411,10 @@ webpack 对于 source-map 提供了 26 个值，是可以进行多组合的
 
 
 #### 优化打包速度
+
+主要点：**缓存 + 多进程 + 减少匹配**
+
+
 
 ##### oneOf
 
@@ -2253,17 +2454,52 @@ rules: [
 
 ##### 多进程打包
 
-```
+
+
+官方推荐使用 `thread-loader`，将耗时的 loader（如 `babel-loader`、`ts-loader`）放在子线程中并行执行
+
+- **优点**：官方维护，兼容性好。可针对特定 loader 启用多进程
+
+- **缺点：**进程启动有开销，小项目可能反而不快
+
+
+
+安装
+
+```shell
 npm i thread-loader -D
-
-/**
- * 使用 thread-loader 多进程编译
- * 进程启动要600ms，进程通讯也要开销，所以一般给 babel 使用，或者打包时间短的不建议使用
- */
- // 使用只需要在要开启多进程打包的 loader 之前使用 thraed-loader 即可
-
-'thread-loader',
 ```
+
+
+
+使用：
+
+```js
+module.exports = {
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        use: [
+          {
+            loader: "thread-loader",
+            options: {
+              workers: 2, // 子进程数量（建议根据 CPU 核心数设置）
+            },
+          },
+          "babel-loader", // 耗时的 loader
+        ],
+      },
+    ],
+  },
+};
+```
+
+> 使用 thread-loader 多进程编译，进程启动也要时间，大约要 600ms，进程通讯也要开销，所以一般给 babel 使用，或者打包时间短的不建议使用
+
+
+
+HappyPack 在 Webpack 5 已不推荐使用（作者推荐改用 `thread-loader`）
 
 
 
@@ -2276,9 +2512,11 @@ dll 的使用分为两步：
 - 首先，打包一个 dll 库
 - 然后，在项目中引入 dll 库
 
-打包一个 dll 库：
 
-- 新建 webpack.dll.config.js，里面内容：
+
+**打包一个 dll 库**
+
+- **新建 `webpack.dll.config.js`**，里面内容：
 
   ```js
   const path = require('path')
@@ -2313,7 +2551,35 @@ dll 的使用分为两步：
   }
   ```
 
-在项目中引入 dll 库：
+
+
+**在主配置中引用 DLL（`webpack.config.js`）**
+
+```js
+module.exports = {    
+  plugins: [
+    // 通过 DllReferencePlugin 插件告知要使用的 DLL 库
+    new webpack.DllReferencePlugin({
+        manifest: path.resolve(__dirname, 'dll', 'zepto.manifest.json'),
+    }), 
+  ]
+}
+```
+
+
+
+**在 html 中引入 dll 库**
+
+可以手动引入：
+
+```html
+<script src="./dll/dll_zepto.js"></script> <!-- 预编译的库 -->
+<script src="./dist/main.js"></script> <!-- 主工程代码 -->
+```
+
+
+
+或者使用 `add-asset-html-webpack-plugin` 自动引入
 
 - 安装 add-asset-html-webpack-plugin
 
@@ -2330,10 +2596,6 @@ dll 的使用分为两步：
 
   ```js
   plugins: [
-      // 通过 DllReferencePlugin 插件告知要使用的 DLL 库
-      new webpack.DllReferencePlugin({
-          manifest: path.resolve(__dirname, 'dll', 'zepto.manifest.json'),
-      }),
       // 通过 AddAssetHtmlWebpackPlugin 将 dll 库引入到 html 模板中
       new AddAssetHtmlWebpackPlugin({
           filepath: path.resolve(__dirname, 'dll', 'dll_zepto.js'),
@@ -2345,15 +2607,23 @@ dll 的使用分为两步：
 
 
 
-##### HardSourceWebpackPlugin
+##### hard-source-webpack-plugin
 
-dll 构建速度已经不明显了，更好的替代方案是使用 HardSourceWebpackPlugin，并且在 webpack5 已经内置这个插件。在 webpack4 中需要下载插件是使用：
+`HardSourceWebpackPlugin` 是一个用于 **缓存 Webpack 中间构建结果** 的插件，通过将模块解析、loader 处理等中间步骤的结果保存到本地磁盘，**显著提升二次构建速度**（尤其在开发环境）
+
+
+
+dll 构建速度已经不明显了，更好的替代方案是使用 HardSourceWebpackPlugin，并且在 webpack5 已经内置这个插件，通过 `cache: true` 即可开启。在 webpack4 中需要下载插件是使用
+
+
 
 安装：
 
 ```js
 npm i hard-source-webpack-plugin -D
 ```
+
+
 
 使用：
 
@@ -2403,6 +2673,8 @@ resolve: {
 
 #### 优化代码运行性能
 
+
+
 ##### 文件资源缓存
 
 主要就是借助浏览器缓存，服务端设置资源缓存，webpack 为 js 和 css 等文件添加文件 hash
@@ -2413,7 +2685,7 @@ webpack 的三种 hash（hash 本身是通过 MD4 的散列函数处理后，生
 - chunkhash：会根据不同的入口（entry）进行借来解析来生成hash值
 - contenthash：文件 hash，具体到某一个文件
 
-```
+```js
 output: {
     filename: 'js/bundle.[contenthash:8].js', // contenthash: 文件 hash，根据文件来生成 hash
 },
@@ -2427,11 +2699,11 @@ plugins: [
 
 
 
-##### tree shaking 作用
+##### tree shaking
 
-tree shaking：摇树，用于消除未调用的代码，主要是 ESModule 进行 tree shaking
+tree shaking：用于**消除 JavaScript 上下文中未引用代码（Dead Code）**的优化技术，通过静态分析移除未被使用的模块导出（exports），从而减少最终打包文件的体积。主要是 ESModule 进行 tree shaking
 
-在 webpack5 中，也提供了对部分 CommomJs 的tree shaking 能力
+在 webpack5 中，也提供了对部分 CommomJs 的 tree shaking 能力
 
 
 
@@ -2455,8 +2727,44 @@ tree shaking：摇树，用于消除未调用的代码，主要是 ESModule 进�
 
 在 webpack4 以上，**对 js 使用 tree shaking 有两种不同的方式**：
 
-- usedExports：通过标记某些函数是否被使用，之后通过 Terser 来进行优化的
+- usedExports
+
+  - 在编译阶段分析模块间的依赖关系，标记未被引用的 `export`
+  - 在代码压缩阶段（如 TerserPlugin）删除这些未被引用的代码
+
 - sideEffects：查看某个文件是否有副作用，有副作用，就不进行 tree shaking
+
+  - 副作用是指模块执行时除了导出值之外的行为（如修改全局变量、注册事件等）。Webpack 默认假设所有文件都有副作用，需明确告知哪些文件可以安全移除。
+
+  - 配置副作用方式：
+
+    - 在 `package.json` 中声明
+
+      ```js
+      {
+        "sideEffects": false,  // 所有文件无副作用
+      
+        // 或指定有副作用的文件
+        "sideEffects": ["*.css", "*.global.js"]
+      }
+      ```
+
+    - 在 webpack 中覆盖
+
+      ```js
+      module.exports = {
+        module: {
+          rules: [
+            {
+              test: /\.js$/,
+              sideEffects: false, // 对 JS 文件禁用副作用检查
+            },
+          ],
+        },
+      };
+      ```
+
+
 
 **useExports 方式：**
 
@@ -2473,9 +2781,13 @@ tree shaking：摇树，用于消除未调用的代码，主要是 ESModule 进�
   }
   ```
 
-*默认生产环境 production 下，usedExports 和 minimize 值都是 true，即生产环境不需要额外配置就支持 usedExports 方式的 tree shaking*
 
-源代码：
+
+默认生产环境 production 下，usedExports 和 minimize 值都是 true，即生产环境不需要额外配置就支持 usedExports 方式的 tree shaking
+
+
+
+举例：
 
 ```js
 import { sum, mul } from "./math";
@@ -2483,7 +2795,7 @@ import { sum, mul } from "./math";
 console.log(sum(20, 30));
 ```
 
-*引用了 mul， 没有使用*
+引用了 mul， 但是没有使用
 
 打包后的代码：
 
@@ -2549,7 +2861,27 @@ import './test';
 
 
 
-##### 代码分离
+**esm 的动态导入 import**
+
+虽然 ESM 支持动态 `import()`（异步代码拆分），但 **Tree Shaking 仍然有效**，因为 Webpack 会对动态导入的模块**单独分析其内部依赖关系**，移除未使用的导出
+
+
+
+动态 `import()` 的路径必须是**静态字符串**（或可静态推断的表达式）[而 require 没有这个规定]，Webpack 在构建时能明确知道加载的是哪个模块，从而分析其导出是否被使用
+
+
+
+总结：
+
+1. **编译阶段**：
+   - Webpack 解析所有 `import()` 的静态路径，生成独立的 chunk（代码块）。
+   - 对每个 chunk 内部的模块**单独应用 Tree Shaking**（分析导出和引用关系）。
+2. **运行时阶段**：
+   - 浏览器按需加载 chunk，但 chunk 内部已经是优化后的代码（移除了未使用的导出）。
+
+
+
+##### 代码分割
 
 作用: 主要的目的是将代码分离到不同的 bundle 中，之后就可以按需加载，或者并行加载这些文件，提高代码加载性能
 
@@ -2685,7 +3017,7 @@ module.exports = {
 - main.bundle.js
 - vendor_chunks.js：第三方包
 - common_chunks.js：自己的模块被**多个入口多次引用**（一般 spa 单页面也不会有这个文件）
-- runtime.js
+- runtime.js：如 `import('abc').then(res=>{})`这种异步加载的代码，在 webpack 中即为运行时代码
 
 
 
@@ -2732,8 +3064,6 @@ import(/* webpackChunkName: 'sub' */ './sub').then(({ addSub }) => {
 ```
 
   ![](./imgs/img27.png)
-
-
 
 
 
@@ -2857,7 +3187,7 @@ CDN：内容分发网络，指通过相互连接的网络系统，利用最靠�
 
 一般在开发中，使用 CDN 主要是两种方式
 
-- 打包的所有静态资源，放到 CDN 服 务器，用户所有资源都是通过 CDN 服务器加载的
+- 打包的所有静态资源，放到 CDN 服务器，用户所有资源都是通过 CDN 服务器加载的
 
 - 一些第三方资源放到 CDN 服务器上
 
@@ -2883,6 +3213,8 @@ CDN：内容分发网络，指通过相互连接的网络系统，利用最靠�
 
 **webpack 中第三方资源使用 CDN 的方法：**
 
+
+
 **方法1：使用html-webpack-externals-plugin**
 
 安装：
@@ -2905,6 +3237,8 @@ plugins: [
     })
 ]
 ```
+
+
 
 **方法2：直接使用外部扩展 externals**
 
@@ -2938,9 +3272,45 @@ module.exports = {
 
 
 
+**CDN 降级方案**
+
+以 react 包为例：
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <script>
+    // 降级逻辑
+    function loadFallback() {
+      // 如果 CDN 未加载成功，动态插入本地资源
+      if (!window.React) {
+        document.write('<script src="/static/react.production.min.js"><\/script>');
+        document.write('<script src="/static/react-dom.production.min.js"><\/script>');
+      }
+    }
+
+    // 异步加载 CDN，失败时触发降级
+    const cdnReact = 'https://cdn.example.com/react/17.0.2/react.production.min.js';
+    const script = document.createElement('script');
+    script.src = cdnReact;
+    script.onerror = loadFallback; // CDN 加载失败时降级
+    document.head.appendChild(script);
+  </script>
+</head>
+<body>
+  <div id="root"></div>
+</body>
+</html>
+```
+
+
+
 ##### gzip 压缩
 
 http 压缩是指在服务器和浏览器间传输压缩文本内容的方法。http 压缩通常采用 gzip 压缩算法压缩html、js、css 等文件。压缩的最大好处就是降低了网络传输的数据量，从而提高客户端浏览器的访问速度。当然，同时也会增加一点服务器的负担
+
+
 
 **http 压缩的流程：**
 
@@ -3135,7 +3505,7 @@ module.exports = {
     filename: 'gweid-utils.js',
     libraryTarget: 'umd', // 使用 umd
     library: 'gweidUtils', // 包名
-    globalObject: 'this'
+    globalObject: 'this' // 兼容 Node 和浏览器
   },
   plugins: [
     new CleanWebpackPlugin()
@@ -3156,6 +3526,8 @@ globalObject: 'this' 这里的 this 设置的就是上面图片中自执行函�
 
 
 ### 自定义 loader 和 plugins
+
+
 
 #### 写一个 loader
 
@@ -3244,11 +3616,35 @@ module.exports = {
   }
   ```
 
+
+
 **loader 的执行顺序：**
 
 一般情况下，loader 的执行顺序是自下向上，从右往左。为什么呢？
 
-loader 执行包括两个阶段，pitch 阶段和 normal 阶段。Normal阶段，就是一般认为的 loader 对源文件进行转译的阶段。
+loader 执行包括两个阶段，pitch 阶段和 normal 阶段。
+
+Webpack 在处理一个模块时，Loader 的执行顺序如下：
+
+```text
+Loader1.pitch -> Loader2.pitch -> ... -> LoaderN.pitch -> 读取资源 -> LoaderN.normal -> ... -> Loader2.normal -> Loader1.normal
+```
+
+- pitch 阶段
+
+  - **提前拦截：**如果某个 Loader 的 `pitch` 方法返回非 `undefined` 值，会**跳过后续 Loader 的 `pitch` 和文件读取**，直接进入 `normal` 阶段。某些场景下可以**通过 `pitch` 提前终止不必要的处理（如缓存命中时）**
+
+  - **共享数据 (`data`)：`pitch` 方法的 `data` 参数可以在 Loader 链中传递数据**
+
+    ```js
+    module.exports.pitch = function(remainingRequest, previousRequest, data) {
+      data.value = '共享数据'; // 后续 Loader 可通过 data 访问
+    };
+    ```
+
+- Normal 阶段：常规 loader 处理，就是一般认为的 loader 对源文件进行转译的阶段。
+
+
 
 例如：有 loader1.js
 
@@ -3671,7 +4067,7 @@ module.exports = function(content) {
   // 使用 marked 将 md 代码转换为 html
   const htmlContent = marked(content)
 
-  // 将 html 壮观为 模板字符串，因为 loader 必须返回 string 或者 buffer
+  // 将 html 转换为 模板字符串，因为 loader 必须返回 string 或者 buffer
   const strContent = "`" + htmlContent + "`"
 
   // 为了在 index.js 中可以通过 import code from './doc/webpack.md' 的形式引入
@@ -3727,7 +4123,7 @@ https://juejin.cn/post/6937829048332746788
 
 安装：
 
-```js
+```shell
 npm i node-ssh -D
 ```
 

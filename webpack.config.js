@@ -59,7 +59,7 @@ const webpackConfig = (env, options) => {
           : 'js/[name]_bundle.[contenthash:8].js', // contenthash: 文件 hash，根据文件来生成 hash
       path: path.resolve(__dirname, 'dist'), // 输出的全局路径，这个必须是绝对路径
       publicPath: MODE === 'development' ? '' : '', // 所有资源引入公共路径前缀
-      chunkFilename: 'js/[name]_chunk.[contenthash:8].js', // 对非入口的 chunk 命名（例如异步代码单独打包出来的文件，配合 /* webpackChunkName: 'sub' */ 这个魔法注释）
+      chunkFilename: 'js/[name]_chunk.[contenthash:8].js', // 控制非入口 chunk 文件的输出文件名（例如异步代码单独打包出来的文件，配合 /* webpackChunkName: 'sub' */ 这个魔法注释）
       // library: '[name]', // 整个库向外暴露的名字
       // libraryTargrt: 'window', // 变量名添加到什么属性上
     },
@@ -162,7 +162,7 @@ const webpackConfig = (env, options) => {
               use: [
                 /**
                  * 使用 thread-loader 多进程编译
-                 * 进程启动要 600ms，进程通讯也要开销，所以一般给 babel 使用，或者打包时间短的不建议使用
+                 * 进程启动也要时间，大约 600ms，进程通讯也要开销，所以一般给 babel 使用，或者打包时间短的不建议使用
                  */
                 // 'thread-loader',
                 {
@@ -190,6 +190,9 @@ const webpackConfig = (env, options) => {
       // 打包构建前先清空 dist
       new CleanWebpackPlugin(),
 
+      // 用来配合 webpack-dev-server 进行热更新
+      // 这里可以不写，因为 webpack-dev-server 3.x 版本判断是否 hot: true，如果是会自动加 HotModuleReplacementPlugin 插件
+      // 具体查看：https://github.com/webpack/webpack-dev-server/blob/8bbef6adf6ae5f6a3109ecd4a6246223d2f77cb2/lib/utils/addEntries.js#L153
       // new webpack.HotModuleReplacementPlugin(),
 
       new HtmlWebpackPlugin({
@@ -208,14 +211,14 @@ const webpackConfig = (env, options) => {
         BASE_URL: '"./"'
       }),
 
-      // 复制目录
+      // 复制目录：将 public 目录下的文件复制到输出目录
       new CopyWebpackPlugin({
         patterns: [
           {
             from: 'public',
             globOptions: {
               ignore: [
-                '**/index.html',
+                '**/index.html', // 已经由 HtmlWebpackPlugin 处理，所以这里忽略它
                 '**/.DS_Store' // mac 系统忽略这个
               ]
             }

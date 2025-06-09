@@ -7,7 +7,7 @@
 webpack 作为一个模块打包机，默认会将项目中所有使用的模块打包到一起，这样能够有效的减少 http 请求，但也带来明显的缺点：
 
 - 代码包过大，页面初始化需要等待代码加载，影响首屏渲染性能；
-- 代码都打包到了一次，没次代码改动，都会造成代码包的变化，导致无法有效应用浏览器缓存，特别对于 NPM 包这类变动较少的代码
+- 代码都打包到了一起，每次代码改动，都会造成代码包的变化，导致无法有效应用浏览器缓存，特别对于 NPM 包这类变动较少的代码
 
 
 
@@ -252,7 +252,7 @@ module.exports = {
 
 #### 缓存组 `cacheGroups`
 
-上述 `minChunks`、`maxInitialRequest`、`minSize` 都属于分包条件，决定是否对什么情况下对那些 Module 做分包处理。此外， `SplitChunksPlugin` 还提供了 `cacheGroups` 配置项用于为不同文件组设置不同的规则，如下：
+上述 `minChunks`、`maxInitialRequest`、`minSize` 都属于分包条件，决定什么情况下对那些 Module 做分包处理。此外， `SplitChunksPlugin` 还提供了 `cacheGroups` 配置项用于为不同文件组设置不同的规则，如下：
 
 ```js
 module.exports = {
@@ -354,10 +354,15 @@ module.exports = {
 - 针对 `node_modules` 资源：
   - 可以将 `node_modules` 模块打包成单独文件(通过 `cacheGroups` 实现)，防止业务代码的变更影响 NPM 包缓存，同时建议通过 `maxSize` 设定阈值，防止 vendor 包体过大；
   - 更激进的，如果生产环境已经部署 HTTP2/3 一类高性能网络协议，甚至可以考虑将每一个 NPM 包都打包成单独文件
+  
 - 针对业务代码：
   - 设置 `common` 分组，通过 `minChunks` 配置项将使用率较高的资源合并为 Common 资源
+  
   - 首屏用不上的代码，尽量以异步方式引入
+  
   - 设置 `optimization.runtimeChunk` 为 `true`，将运行时代码拆分为独立资源
+  
+    > 如 `import('abc').then(res=>{})`这种异步加载的代码，在 webpack 中即为运行时代码
 
 
 

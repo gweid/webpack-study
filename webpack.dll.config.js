@@ -15,6 +15,7 @@ module.exports = {
     },
     plugins: [
         new CleanWebpackPlugin(),
+
         // 生成一份 manifest 文件
         new webpack.DllPlugin({
             name: 'dll_[name]', // 这里的 name 要与 output 的 library 一致
