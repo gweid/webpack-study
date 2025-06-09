@@ -2827,6 +2827,87 @@ module.exports = {
 
 
 
+##### 图片资源处理
+
+webpack4 可以使用`url-loader` + `image-webpack-loader` 进行图片压缩（兼容 webpack4）
+
+```js
+module.exports = {
+  module: {
+    rules: [
+      {
+        test: /\.(jpe?g|png|gif|svg)$/i,
+        use: [
+          {
+            loader: 'url-loader',
+            options: {
+              limit: 8192, // 小于8KB的图片转为Base64
+              name: 'images/[name].[hash:8].[ext]',
+            },
+          },
+          {
+            loader: 'image-webpack-loader',
+            options: {
+              mozjpeg: { progressive: true },
+              optipng: { enabled: false },
+              pngquant: { quality: [0.65, 0.9], speed: 4 },
+              gifsicle: { interlaced: false },
+              webp: { quality: 75 },
+            },
+          },
+        ],
+      },
+    ],
+  },
+};
+```
+
+
+
+如果是 webpack5，官方推荐使用：`image-minimizer-webpack-plugin`
+
+```shell
+npm install image-minimizer-webpack-plugin imagemin-gifsicle imagemin-jpegtran imagemin-optipng imagemin-svgo --save-dev
+```
+
+
+
+使用
+
+```js
+const ImageMinimizerPlugin = require('image-minimizer-webpack-plugin');
+
+module.exports = {
+  module: {
+    rules: [
+      {
+        test: /\.(jpe?g|png|gif|svg)$/i,
+        type: 'asset', // 自动选择内联或单独文件
+      },
+    ],
+  },
+  optimization: {
+    minimizer: [
+      new ImageMinimizerPlugin({
+        minimizer: {
+          implementation: ImageMinimizerPlugin.imageminMinify,
+          options: {
+            plugins: [
+              ['gifsicle', { interlaced: true }],
+              ['jpegtran', { progressive: true }],
+              ['optipng', { optimizationLevel: 5 }],
+              ['svgo', { plugins: ['preset-default'] }],
+            ],
+          },
+        },
+      }),
+    ],
+  },
+};
+```
+
+
+
 ##### tree shaking
 
 tree shaking：用于**消除 JavaScript 上下文中未引用代码（Dead Code）**的优化技术，通过静态分析移除未被使用的模块导出（exports），从而减少最终打包文件的体积。主要是 ESModule 进行 tree shaking
