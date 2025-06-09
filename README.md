@@ -713,6 +713,82 @@ npm i html-withimg-loader -D
 
 
 
+#### webpack5 使用 Asset Modules
+
+Webpack 5 引入了内置的 Asset Modules，可以代替和 file-loader #I url-loader。
+
+```js 
+module.exports = {
+  module: {
+    rules: [
+      {
+        test: /\.(png|jpg|jpeg|gif|svg)$/,
+        type: 'asset/resource', // 生成单独文件
+        generator: {
+          filename: 'images/[name][ext]', // 输出路径和文件名
+        }
+      },
+      {
+        test: /\.txt$/,
+        type: 'asset/source'
+      }
+    ]
+  }
+}
+```
+
+
+
+Asset Modules 的四种类型：
+
+|     **类型**     |                           **作用**                           | **替代的旧 Loader**  |
+| :--------------: | :----------------------------------------------------------: | :------------------: |
+| `asset/resource` |                 导出文件 URL（生成单独文件）                 |    `file-loader`     |
+|  `asset/inline`  |               导出文件 Data URL（Base64 内联）               |     `url-loader`     |
+|  `asset/source`  |              导出文件原始内容（如 `.txt` 文件）              |     `raw-loader`     |
+|     `asset`      | 自动选择：小文件内联（Base64），大文件单独导出（根据 `parser.dataUrlCondition`） | `url-loader + limit` |
+
+
+
+场景：
+
+```js
+module.exports = {
+  module: {
+    rules: [
+      // 图片：小图内联，大图单独导出
+      {
+        test: /\.(png|jpg|jpeg|gif|svg)$/i,
+        type: 'asset',
+        parser: {
+          dataUrlCondition: {
+            maxSize: 8 * 1024, // 8KB 以下内联
+          },
+        },
+        generator: {
+          filename: 'images/[name].[hash:8][ext]',
+        },
+      },
+      // 字体：全部单独导出
+      {
+        test: /\.(woff|woff2|eot|ttf|otf)$/i,
+        type: 'asset/resource',
+        generator: {
+          filename: 'fonts/[name][ext]',
+        },
+      },
+      // 文本文件：直接导出内容
+      {
+        test: /\.(txt|md)$/i,
+        type: 'asset/source',
+      },
+    ],
+  },
+};
+```
+
+
+
 ### 编译 HTML
 
 
