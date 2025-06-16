@@ -1432,7 +1432,7 @@ module.exports = {
 
 ### 抽离 css
 
--   注意：抽离 css 需要配置一下 miniCssExtractPlugin 的 publicPath， 不然 CSS 里面的图片路径是以 CSS 目录为根目录的
+> 注意：抽离 css 需要配置一下 miniCssExtractPlugin 的 publicPath， 不然 CSS 里面的图片路径是以 CSS 目录为根目录的
 
 ```js
 const miniCssExtractPlugin = require("mini-css-extract-plugin") // 抽离 css, 将 css 从 js 中抽离出来，减少 js 体积，有利于减少页面加载时间
@@ -1480,6 +1480,8 @@ plugins: [
 
 使用 postcss-loader + autoprefixer
 
+
+
 **认识 postcss：**
 
 首先，postcss 本身是独立的，它可以在很多地方使用，并不局限于 webpack 中；但是它本身提供很少的功能，更多的功能依赖于插件，比如加浏览器前缀就是需要 autoprefixer 这个插件
@@ -1512,7 +1514,7 @@ plugins: [
 
 在 webpack 中配置 postcss-loader
 
-```
+```js
 npm i postcss-loader autoprefixer -D
 
 // postcss.config.js 中
@@ -1563,6 +1565,8 @@ module.exports = {
 }
 ```
 
+
+
 或者不单独使用 postcss.config.js 文件，直接在 webpack.config.js 中配置：
 
 ```js
@@ -1590,7 +1594,7 @@ module.exports = {
 **使用 postcss-preset-env：**
 安装：
 
-```js
+```shell
 npm i postcss-preset-env -D
 ```
 
@@ -2358,7 +2362,7 @@ resolve 常用的属性：
 
 #### 优化构建速度
 
-##### HMR hot module replacement 热模块替换
+##### HMR 模块热替换
 
 作用：只对有变动的模块进行重新打包更新
 
@@ -2386,7 +2390,7 @@ devServer: {
 
 
 
-#### 优化代码调试 source-map: 源代码到构建代码的映射
+#### source-map: 源代码到构建代码的映射
 
 经过 webpack 编译后：
 
@@ -2402,6 +2406,8 @@ devServer: {
 
 而 source-map 可以通过映射关系在构建后的代码中找到错误代码在源代码所在位置
 
+
+
 **source-map 组成：**
 
 - version：版本，当前版本为3；最开始的 source-map （版本1）的体积是源代码的 10 倍，版本 2 减少了 50%，版本 3 又减少 50%，所以当前版本 3 的体积相当于源代码的 2.5 倍
@@ -2412,12 +2418,16 @@ devServer: {
 - sourcesContent：转换前的源代码
 - psourceRoot：所有的sources相对的根目录
 
+
+
 **使用 source-map：**
 
 1. 在 webpack 打包的时候，根据 devtool 生成 source-map
 
 2. 在打包后的产物 bundle.js 最后添加一行注释 `//# sourceMappingURL=bundle.js.map`
 3. 浏览器会根据这行注释，查找响应的 source-map
+
+
 
 **webpack 中 devtool 配置：**
 
