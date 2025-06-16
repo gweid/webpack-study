@@ -4799,31 +4799,37 @@ class WebpackCLI {
 
 
 
-### 结论
+### 总结webpack-cli
 
-在 webpack 中，启动 webpack 借助于 webpack-cli，webpack-cli 主要做的事就是：对 webpack.config.js 以及 package.json 中与 webpack 相关的配置参数做处理、合并等等一些前置操作，其实最核心的就是下面这一段，执行 wbepack 函数
+在 webpack 中，启动 webpack 借助于 webpack-cli，webpack-cli 主要做的事就是：
 
-```js
-compiler = this.webpack(
-    config.options,
-    callback
-    ? (error, stats) => {
-        if (error && this.isValidationError(error)) {
-            this.logger.error(error.message);
-            process.exit(2);
-        }
+- 判断 webpack-cli、webpack 有没有安砖
 
-        callback(error, stats);
-    }
-    : callback,
-);
-```
+- 对 webpack.config.js 以及 package.json 中与 webpack 相关的配置参数做处理、合并等等一些前置操作
+
+- 执行 webpack 函数。最核心的就是这一段：
+
+  ```js
+  compiler = this.webpack(
+      config.options,
+      callback
+      ? (error, stats) => {
+          if (error && this.isValidationError(error)) {
+              this.logger.error(error.message);
+              process.exit(2);
+          }
+  
+          callback(error, stats);
+      }
+      : callback,
+  );
+  ```
+
+
 
 其实在 vue-cli 或者 create-react-app 里面就根本没有使用到 webpack-cli，就是因为 webpack-cli 那边主要就是做的一些配置前置处理，而这些脚手架工具不需要。
 
-验证：在 webpack 中不使用 webpack-cli 也能进行打包
-
-新建一个 build.js 文件：
+验证：在 webpack 中不使用 webpack-cli 也能进行打包。新建一个 build.js 文件：
 
 ```js
 const webpack = require('webpack')
